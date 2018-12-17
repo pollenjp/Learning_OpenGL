@@ -10,7 +10,6 @@ run : $(FILE)
 $(FILE) : $(FILE).c
 	$(CC) $< -o $@ $(CFLAGS)
 
-
 clean :
 	rm $(FILE)
 
