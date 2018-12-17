@@ -1,6 +1,7 @@
 
 CC = gcc
-CFLAGS = -lglut -lGLU -lGL -lm
+#CFLAGS = -lglut -lGLU -lGL -lm
+CFLAGS = -lglut -lGL
 FILE = chapter.1
 
 run : $(FILE)

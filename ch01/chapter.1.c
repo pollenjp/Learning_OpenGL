@@ -33,11 +33,7 @@ void Initialize(int argc, char* argv[])
 {
   InitWindow(argc, argv);
 
-  fprintf(
-      stdout,
-      "INFO: OpenGL Version: %s\n",
-      glGetString(GL_VERSION)
-      );
+  fprintf( stdout, "INFO: OpenGL Version: %s\n", glGetString(GL_VERSION) );
 
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
@@ -62,7 +58,7 @@ void InitWindow(int argc, char* argv[])
 
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
-  WindowHandle = glutCreateWindow(WINDOW_TITLE_PREFIX);
+  WindowHandle = glutCreateWindow( WINDOW_TITLE_PREFIX );
 
   if(WindowHandle < 1) {
     fprintf(
