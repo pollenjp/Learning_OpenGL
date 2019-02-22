@@ -1,23 +1,39 @@
-#===============================================================================
-CC := g++
+CXX := g++
 CXXFLAGS = -g -Wall -std=c++11
-GLFW_VERSION :=
+GLFW_VERSION := 3.2.1
 
-# [gcc -l -L option flags for library link](https://www.rapidtables.com/code/linux/gcc/gcc-l.html)
-# [gcc -I option flag (include directory)](https://www.rapidtables.com/code/linux/gcc/gcc-i.html)
-LDLIBS1 := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/lib
-LDLIBS2 := glfw3 dl X11 Xxf86vm Xinerama Xrandr Xcursor Xi pthread
-LDLIBS := $(addprefix -L,${LDLIBS1}) $(addprefix -l,${LDLIBS2})
 INC := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/include
 INC := $(addprefix -I,${INC})
+LDFLAGS1 := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/lib
+LDFLAGS2 := glfw3 dl X11 Xxf86vm Xinerama Xrandr Xcursor Xi pthread
+LDFLAGS := $(addprefix -L,${LDFLAGS1}) $(addprefix -l,${LDFLAGS2})
+LINK.cc  = $(CXX) $(CXXFLAGS) $(CPPFLAGS) ${LDFLAGS} $(TARGET_ARCH)
 
 OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 TARGET := check_version
+export
 
-${TARGET} : ${TARGET}.cpp
-% : %.cpp
-#${TARGET} : ${OBJECTS}
-	$(LINK.cc) $^ ${INC} ${LDLIBS} -o $@
+.DEFAULT_GOAL : run
+
+${TARGET} : ${OBJECTS}
+
+%.o : %.cpp
+	@$(MAKE) preprocess
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $^ ${INC} ${LDFLAGS} -c -o $@
+% : %.o
+	@$(MAKE) preprocess
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $^ ${LDFLAGS} -o $@
+
+.PHONY : run
+run :  # 要件チェック
+	${MAKE} ${TARGET}
+	./${TARGET}
+
+.PHONY : preprocess
+preprocess :  # 要件チェック
+ifndef GLFW_VERSION
+	$(error "=== The GLFW_VERSION variable should be set ===")
+endif
 
 .PHONY : clean
 clean :
@@ -27,6 +43,7 @@ clean :
 #===============================================================================
 .PHONY : install-glfw
 install-glfw :
+	@$(MAKE) preprocess
 	GLFW_VERSION=${GLFW_VERSION} ./install-glfw.bash.sh
 
 
