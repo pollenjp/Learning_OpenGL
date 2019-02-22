@@ -22,7 +22,7 @@ ${TARGET} : ${OBJECTS}
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $^ ${INC} ${LDLIBS} -c -o $@
 % : %.o
 	@$(MAKE) preprocess
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $^ ${LDLIBS} -o $@
+	$(LINK.cc) $(TARGET_ARCH) $^ ${LDLIBS} -o $@
 
 .PHONY : run
 run :  # 要件チェック
