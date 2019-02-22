@@ -13,7 +13,7 @@ OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 TARGET := check_version
 export
 
-.DEFAULT_GOAL : run
+.DEFAULT_GOAL := run
 
 ${TARGET} : ${OBJECTS}
 
