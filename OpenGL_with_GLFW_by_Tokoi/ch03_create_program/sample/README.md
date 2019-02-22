@@ -1,6 +1,8 @@
+#
 
 ```
 $ make
-$ ./sample
 ```
+
+![](./img1.png)
 
