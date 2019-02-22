@@ -41,6 +41,9 @@ Subminor version : 1
 「`'XXX'に対する定義されていない参照です`」というエラーに見舞われたら「undefined reference t2 XXX」でGoogle検索すればだいたい何のライブラリ参照をすればいいか(`-l`)が大体わかる.
 これは`glfw3`が他のライブラリに依存していることによって生じるエラー
 
+- [c++ - Linker error on GLFW on linux (x11) - Stack Overflow](https://stackoverflow.com/questions/48819869/linker-error-on-glfw-on-linux-x11)
+- [Undefined References Compiling OpenGL/glfw/glew on Ubuntu(g++) - Stack Overflow](https://stackoverflow.com/questions/29459664/undefined-references-compiling-opengl-glfw-glew-on-ubuntug)
+
 ```
 g++ -g -Wall -std=c++11    check_version.cpp -I/home/pollenjp/.glfw/install/GLFW-3.2.1/include -L/home/pollenjp/.glfw/install/GLFW-3.2.1/lib -lglfw3 -o check_version
 /home/pollenjp/.glfw/install/GLFW-3.2.1/lib/libglfw3.a(vulkan.c.o): 関数 `_glfwInitVulkan' 内:
