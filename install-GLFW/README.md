@@ -22,6 +22,7 @@ $ make GLFW_VERSION=3.2.1
  % make check_version GLFW_VERSION=3.1.2
 g++ -g -Wall -std=c++11    check_version.cpp -I/home/pollenjp/.glfw/install/GLFW-3.1.2/include -L/home/pollenjp/.glfw/install/GLFW-3.1.2/lib -lglfw3 -ldl -lX11 -lXxf86vm -lXinerama -lXrandr -lXcursor -lXi -lpthread -o check_version
  % ./check_version 
+GLFW version     : 3.1.2 X11 GLX clock_gettime /dev/js XI Xf86vm
 Major version    : 3
 Minor version    : 1
 Subminor version : 2
@@ -30,6 +31,7 @@ rm -f check_version check_version.o *~ .*~ core
  % make check_version GLFW_VERSION=3.2.1
 g++ -g -Wall -std=c++11    check_version.cpp -I/home/pollenjp/.glfw/install/GLFW-3.2.1/include -L/home/pollenjp/.glfw/install/GLFW-3.2.1/lib -lglfw3 -ldl -lX11 -lXxf86vm -lXinerama -lXrandr -lXcursor -lXi -lpthread -o check_version
  % ./check_version 
+GLFW version     : 3.2.1 X11 GLX EGL clock_gettime /dev/js Xf86vm
 Major version    : 3
 Minor version    : 2
 Subminor version : 1

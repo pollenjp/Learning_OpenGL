@@ -9,7 +9,7 @@ int main(int argc, char** argv)
     std::cerr << "Can't initialize GLFW" << std::endl;
     return 1;
   }
-  //std::cout << "GLFW version     : " << glfwGetVersionString() << std::endl;
+  std::cout << "GLFW version     : " << glfwGetVersionString() << std::endl;
   std::cout << "Major version    : " << GLFW_VERSION_MAJOR     << std::endl;
   std::cout << "Minor version    : " << GLFW_VERSION_MINOR     << std::endl;
   std::cout << "Subminor version : " << GLFW_VERSION_REVISION  << std::endl;
