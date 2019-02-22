@@ -4,9 +4,9 @@ GLFW_VERSION := 3.2.1
 
 INC := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/include
 INC := $(addprefix -I,${INC})
-LDFLAGS1 := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/lib
-LDFLAGS2 := glfw3 dl X11 Xxf86vm Xinerama Xrandr Xcursor Xi pthread
-LDFLAGS := $(addprefix -L,${LDFLAGS1}) $(addprefix -l,${LDFLAGS2})
+LDLIBS1 := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/lib
+LDLIBS2 := glfw3 dl X11 Xxf86vm Xinerama Xrandr Xcursor Xi pthread
+LDLIBS := $(addprefix -L,${LDLIBS1}) $(addprefix -l,${LDLIBS2})
 LINK.cc  = $(CXX) $(CXXFLAGS) $(CPPFLAGS) ${LDFLAGS} $(TARGET_ARCH)
 
 OBJECTS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
@@ -19,10 +19,10 @@ ${TARGET} : ${OBJECTS}
 
 %.o : %.cpp
 	@$(MAKE) preprocess
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $^ ${INC} ${LDFLAGS} -c -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $^ ${INC} ${LDLIBS} -c -o $@
 % : %.o
 	@$(MAKE) preprocess
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $^ ${LDFLAGS} -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) $^ ${LDLIBS} -o $@
 
 .PHONY : run
 run :  # 要件チェック
