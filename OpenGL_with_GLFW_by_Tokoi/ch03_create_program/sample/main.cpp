@@ -13,7 +13,7 @@ int main()
 
 
   // 終了時の処理登録
-  std::atexit(/* *func= */ glfwTerminate);
+  std::atexit(/* *func= */ glfwTerminate);  // [std::atexit - cppreference.com](https://en.cppreference.com/w/cpp/utility/program/atexit)
 
 
   // ウィンドウを作成
