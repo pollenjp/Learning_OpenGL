@@ -10,4 +10,4 @@ $ make
 
 ![](./img1.png)
 
-![](./movie1.png)
+![](./movie1.gif)
