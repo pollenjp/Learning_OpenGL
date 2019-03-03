@@ -171,7 +171,7 @@ GLuint createProgram(const char *vsrc,
 // @param (const char filename) シェーダのソースファイル名
 // @param (const char buffer) 読み込んだソースファイルのテキストを書きこむ
 // @return (bool -) return true if successfully read file.
-bool readShaderSource(const char *filename, std::vector<GLchar> &buffer)
+bool readShaderSource(const char * filename, std::vector<GLchar> &buffer)
 {
   if (filename == NULL) return false;
   std::ifstream file(/* const char* __s= */ filename, /* ios_base::openmode __mode= */ std::ios::binary);
@@ -242,8 +242,11 @@ GLuint loadProgram(const char *vertex_filename, const char *fragment_filename)
 
 // 矩形の頂点の位置
 // > [constexpr - cpprefjp C++日本語リファレンス](https://cpprefjp.github.io/lang/cpp11/constexpr.html)
-// > constexprは、汎用的に定数式を表現するための機能である.
-// > この機能を使用することで,コンパイル時に値が決定する定数,コンパイル時に実行される関数,コンパイル時にリテラルとして振る舞うクラスを定義できる.
+//   constexprは、汎用的に定数式を表現するための機能である.
+//   この機能を使用することで,コンパイル時に値が決定する定数,コンパイル時に実行される関数,コンパイル時にリテラルとして振る舞うクラスを定義できる.
+// > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p82
+//   CPU 側のプログラムでは頂点の x 座標値と y 座標値だけを設定しています. これらはそれぞれ position.x と position.y に
+//   格納されます. 残りの position.z には 0, p.w には 1 がデフォルト値として格納されています. (point.vert の in vec4)
 constexpr Object::Vertex rectangle_vertex[] = {{-0.5f, -0.5f},
                                                { 0.5f, -0.5f},
                                                { 0.5f,  0.5f},
@@ -286,15 +289,26 @@ int main()
     std::cout << "Failed to Load vertex and fragment program and Create Program Object." << std::endl;
   }
 
+  // uniform 変数の場所を取得する
+  // [glGetUniformLocation - OpenGL 4 Reference Pages](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetUniformLocation.xhtml)
+  // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p95
+  //   uniform 変数には、描画を行う前に CPU 側のプログラムで値を設定.
+  //   そのために,プログラムオブジェクトにおける uniform 変数の場所 (番号) を, CPU 側のプログラムで調べておきます.
+  // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p96
+  //   program に指定したプログラムオブジェクトの中で使われている name に指定した uniform 変数の場所を探します.
+  //   戻り値は uniform 変数の index で,見つからなければ -1 を返します.
+  const GLint aspectLoc(/* GLint */glGetUniformLocation(/*       GLuint   program= */program,
+                                                        /* const GLchar * name   = */"aspect"));
+
   // 図形データを作成する
   // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p82
   // > 図形の描画は Shape クラスのインスタンスを生成して行いますが, そのポインタをスマート
   // > ポインタ unique_ptr にします. unique_ptr は shared_ptr と違って複数のポインタが同じインスタ
   // > ンスを指すことはありませんが,ポインタが削除されたときに,それが指すインスタンスも自動
   // > 的に削除 (delete) してくれます. これを使うために, ここでも memory を #include します。
-  std::unique_ptr<const Shape> shape(new Shape(/*       GLint          dim_size,    = */ 2,
-                                               /*       GLsizei        vertex_count = */ 4,
-                                               /* const Object::Vertex *vertex_array= */ rectangle_vertex));
+  std::unique_ptr<const Shape> shape(new Shape(/*       GLint            dim_size,    = */ 2,  // (x,y)
+                                               /*       GLsizei          vertex_count = */ 4,  // rectangle_vertexの4頂点
+                                               /* const Object::Vertex * vertex_array= */ rectangle_vertex));
 
   // ループ処理
   // window が開いている間繰り返す
@@ -308,9 +322,15 @@ int main()
 
     // シェーダプログラムの使用開始
     // glUseProgram(program); は,使用するシェーダプログラムが一つしかなければ,while ループの前に置くことができる.
-    // シェーダプログラムを描画命令のたびに切り替えて使う場合は,この62while ループの中に置いてください.
+    // シェーダプログラムを描画命令のたびに切り替えて使う場合は,この while ループの中に置いてください.
     // なお,シェーダプログラムが不要になれば glUseProgram(0); を実行するが,シェーダプログラムは使いっぱなしでも構わない.
     glUseProgram(/* GLuint program= */ program);
+
+    // uniform 変数に値を設定する
+    // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p96
+    //   現在使用中のシェーダプログラムの location に指定した index の float 型の uniform 変数に GLfloat 型の値 v0 を設定します
+    glUniform1f(/* GLint   location= */aspectLoc,            // uniform 変数の場所
+                /* GLfloat v0      = */window.getAspect());  // 設定する GLfloat 型の値
 
     // 図形を描画する
     shape->draw();

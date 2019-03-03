@@ -5,6 +5,7 @@
 // @brief class 図形データ
 class Object
 {
+private:
   // 頂点配列オブジェクト名
   GLuint vertex_array_object;
   // 頂点バッファオブジェクト名
@@ -41,9 +42,9 @@ public:
   // @param (const GLint   dim_size     ) 頂点の位置の次元
   // @param (const GLsizei vertex_count ) 頂点の数
   // @param (const Vertex  *vertex_array) 頂点属性を格納した配列
-  Object(const GLint   dim_size,
-         const GLsizei vertex_count,
-         const Vertex  *vertex_array)
+  Object(const GLint     dim_size,
+         const GLsizei   vertex_count,
+         const Vertex  * vertex_array)
   {
     // Vertex Array Object - 頂点配列オブジェクト
     // > [glGenVertexArrays - OpenGL 4 Reference Pages](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)
@@ -107,10 +108,12 @@ public:
     glDeleteBuffers(/* GLsizei      n       = */ 1, /* const GLuint *buffers= */ &vertex_buffer_objext);
   }
 
+  // @brief 頂点配列オブジェクトの結合
+  // @detail
+  //   > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p79
+  //     図形を描画するときは,あらかじめ glBindVertexArray() により頂点配列オブジェクトを結合しておく必要があるので,
+  //     この処理を行うメソッド bind() を用意しておきます
   void bind() const
-  // 頂点配列オブジェクトの結合
-  // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p79
-  // > 図形を描画するときは,あらかじめ glBindVertexArray() により頂点配列オブジェクトを結合しておく必要があるので,この処理を行うメソッド bind() を用意しておきま
   {
     // 描画する頂点配列オブジェクトを指定する
     glBindVertexArray(/* GLuint array= */ vertex_array_object);
