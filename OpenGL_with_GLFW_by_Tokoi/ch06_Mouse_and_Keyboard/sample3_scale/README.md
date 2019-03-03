@@ -1,4 +1,4 @@
-# ch06 Mouse and Keyboard - sample2
+# ch06 Mouse and Keyboard - sample3
 
 - 6.1.5 表示図形のサイズの固定 (p.97)
 
