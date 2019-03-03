@@ -1,3 +1,11 @@
+/**
+ * @file main.cpp
+ * @brief main program
+ * @author pollenjp
+ * @date
+ * @detail
+ *   - [◯◯くんのために一所懸命書いたものの結局◯◯くんの卒業に間に合わなかった GLFW による OpenGL 入門 (draft 版) - 和歌山大学システム工学部 床井浩平](http://marina.sys.wakayama-u.ac.jp/~tokoi/GLFWdraft.pdf)
+ */
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -8,14 +16,11 @@
 #include "Window.h"
 #include "Shape.h"
 
-//==================================================================================================
+// @brief シェーダオブジェクトのコンパイル結果を表示する
+// @param (GLuint       shader) シェーダオブジェクト名
+// @param (const char * str   ) コンパイルエラーが発生した場所を示す文字列
+// @return (GLboolean   -     ) error status boolean
 GLboolean printShaderInfoLog(GLuint shader, const char *str)
-// シェーダオブジェクトのコンパイル結果を表示する
-// |-Parameters
-// | shader |       GLuint    | シェーダオブジェクト名
-// | str    | const char *    | コンパイルエラーが発生した場所を示す文字列
-// |-Returns
-// |        |       GLboolean | error status boolean
 {
   // コンパイル結果を取得する
   // [glGetShader - OpenGL 4 Reference Pages](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetShader.xhtml)
@@ -47,14 +52,10 @@ GLboolean printShaderInfoLog(GLuint shader, const char *str)
 }
 
 
-//==================================================================================================
+// @brief プログラムオブジェクトのリンク結果を表示する
+// @param (GLuint program) プログラムオブジェクト名
+// @return (GLboolean -) error status boolean
 GLboolean printProgramInfoLog(GLuint program)
-// プログラムオブジェクトのリンク結果を表示する
-// : 
-// |-Parameters
-// | program |       GLuint    | プログラムオブジェクト名
-// |-Returns
-// |         |       GLboolean | error status boolean
 {
   // リンク結果を取得する
   GLint status;
@@ -85,18 +86,14 @@ GLboolean printProgramInfoLog(GLuint program)
 }
 
 
-//==================================================================================================
+// @brief プログラムオブジェクトを作成する
+// @detail Create a Vertex Shader Object and a Fragment Shader Object. Read from source program.
+// @param (const char * vsrc) バーテックスシェーダのソースプログラムの文字列
+// @param (const char * fsrc) フラグメントシェーダのソースプログラムの文字列
+// @return (GLuint program) プログラムオブジェクトの番号. If error, return 0.
+// @ref [C++の基礎 : const 修飾子](https://www.s-cradle.com/developer/sophiaframework/tutorial/Cpp/const.html)
 GLuint createProgram(const char *vsrc,
                      const char *fsrc)
-// プログラムオブジェクトを作成する
-//
-// |-Parameters
-// | *vsrc   | const char   | バーテックスシェーダのソースプログラムの文字列
-// | *fsrc   | const char   | フラグメントシェーダのソースプログラムの文字列
-// |-Returns
-// | program |       GLuint | プログラムオブジェクトの番号. If error, return 0.
-//
-// [C++の基礎 : const 修飾子](https://www.s-cradle.com/developer/sophiaframework/tutorial/Cpp/const.html)
 {
   // 空のプログラムオブジェクトを作成する
   //   [glCreateProgram - OpenGL 4 Reference Pages](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
@@ -125,10 +122,7 @@ GLuint createProgram(const char *vsrc,
     glCompileShader(/* GLuint shader= */ vobj);
 
     // バーテックスシェーダのシェーダオブジェクトをプログラムオブジェクトに組み込む
-    //if(printShaderInfoLog(/* GLuint shader=*/ vobj, /* const char *str= */ "vertex shader")){  // エラーが出ればstderrが起こる
-    //  glAttachShader(/* GLuint program= */ program, /* GLuint shader= */ vobj);
-    //}
-    if(printShaderInfoLog(/* GLuint shader= */ vobj, /* const char *str= */ "vertex shader"))  // stderr
+    if(printShaderInfoLog(/* GLuint shader= */ vobj, /* const char *str= */ "vertex shader"))  // エラーが出ればstderrが起こる
       glAttachShader(/* GLuint program= */ program, /* GLuint shader= */ vobj);
     glDeleteShader(/* GLuint shader= */ vobj);
   }
@@ -173,15 +167,11 @@ GLuint createProgram(const char *vsrc,
 }
 
 
-//==================================================================================================
+// @brief シェーダのソースファイルを読み込んだメモリを返す
+// @param (const char filename) シェーダのソースファイル名
+// @param (const char buffer) 読み込んだソースファイルのテキストを書きこむ
+// @return (bool -) return true if successfully read file.
 bool readShaderSource(const char *filename, std::vector<GLchar> &buffer)
-// シェーダのソースファイルを読み込んだメモリを返す
-//
-// |-Parameters
-// | filename | const char   | シェーダのソースファイル名
-// | buffer   | const char   | 読み込んだソースファイルのテキストを書きこむ
-// |-Returns
-// |          | bool         | return true if successfully read file.
 {
   if (filename == NULL) return false;
   std::ifstream file(/* const char* __s= */ filename, /* ios_base::openmode __mode= */ std::ios::binary);
@@ -217,15 +207,11 @@ bool readShaderSource(const char *filename, std::vector<GLchar> &buffer)
 }
 
 
-//==================================================================================================
+// @brief シェーダのソースファイルを読み込んでプログラムオブジェクトを作成する
+// @param (const char * vertex_filename) バーテックスシェーダのソースファイル名
+// @param (const char * fragment_filename) フラグメントシェーダのソースファイル名
+// @return (GLuint -) return program object index if successfully read file, 0 otherwise.
 GLuint loadProgram(const char *vertex_filename, const char *fragment_filename)
-// シェーダのソースファイルを読み込んでプログラムオブジェクトを作成する
-//
-// |-Parameters
-// | *vertex_filename   | const char  | バーテックスシェーダのソースファイル名
-// | *fragment_filename | const char  | フラグメントシェーダのソースファイル名
-// |-Returns
-// |                    | GLuint      | return program object index if successfully read file, 0 otherwise.
 {
   // シェーダのソースファイルを読み込む
   // Vertex
@@ -254,21 +240,16 @@ GLuint loadProgram(const char *vertex_filename, const char *fragment_filename)
 }
 
 
-//==================================================================================================
 // 矩形の頂点の位置
 // > [constexpr - cpprefjp C++日本語リファレンス](https://cpprefjp.github.io/lang/cpp11/constexpr.html)
 // > constexprは、汎用的に定数式を表現するための機能である.
 // > この機能を使用することで,コンパイル時に値が決定する定数,コンパイル時に実行される関数,コンパイル時にリテラルとして振る舞うクラスを定義できる.
-//constexpr Object::Vertex rectangle_vertex[] = {{-0.5f, -0.5f},
-//                                               { 0.5f, -0.5f},
-//                                               { 0.5f,  0.5f},
-//                                               {-0.5f,  0.5f}};
 constexpr Object::Vertex rectangle_vertex[] = {{-0.5f, -0.5f},
                                                { 0.5f, -0.5f},
                                                { 0.5f,  0.5f},
                                                {-0.5f,  0.5f}};
 
-//==================================================================================================
+
 int main()
 {
   // GLFW の初期化 (GLFW)
@@ -292,7 +273,7 @@ int main()
   // ウィンドウを作成する
   Window window;
 
-  // 現在のウィンドウの背景色を設定
+  // 現在のウィンドウの背景色を設定 (background color)
   glClearColor(/* GLfloat red   = */ 1.0f,
                /* GLfloat green = */ 1.0f,
                /* GLfloat blue  = */ 1.0f,

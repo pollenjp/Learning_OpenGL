@@ -1,4 +1,4 @@
-# ch06 Mouse and Keyboard - sample1
+# ch06 Mouse and Keyboard - sample2
 
 - [Execute](#Execute)
 

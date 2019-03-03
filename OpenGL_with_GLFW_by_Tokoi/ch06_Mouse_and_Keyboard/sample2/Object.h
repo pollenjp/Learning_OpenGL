@@ -2,26 +2,45 @@
 #include <GL/glew.h>
 
 
+// @brief class 図形データ
 class Object
-// 図形データ
 {
   // 頂点配列オブジェクト名
   GLuint vertex_array_object;
   // 頂点バッファオブジェクト名
   GLuint vertex_buffer_objext;
 
+
+private:
+  //========================================
+  // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p79
+  // > ただし,これだとインスタンスのコピーが複数作られたときに,そのうちのどれか一つを削除すると,
+  // > それらの間で共有されている頂点配列オブジェクトや頂点バッファオブジェクトが削除されてしまいます.
+  // > そうすると残りのインスタンスが使えなくなるほか,それらを削除しようとしたときに既に削除された
+  // > バッファオブジェクトを削除しようとして,OpenGL のエラーを引き起こしてしまいます.
+  // > そこでコピーコンストラクタと代入演算子を private メンバにして,インスタンスのコピーを禁止します
+  // > (コピーしようとするとコンパイルエラーになります).
+  // @ref: [C++ のコピーコンストラクターと代入演算子 | プログラマーズ雑記帳](http://yohshiy.blog.fc2.com/blog-entry-303.html)
+
+  // @brief constructor コピーコンストラクタによるコピー禁止
+  Object(const Object &o);
+  // @brief constructor 代入によるコピー禁止
+  Object &operator=(const Object &o);
+  //========================================
+
+
 public:
+  // @brief struct, 頂点(x,y)の定義
   struct Vertex
   {
     // 頂点属性
     GLfloat position[2];  // (x,y)
   };
 
-  /**
-   * @param | dim_size      | const GLint   | 頂点の位置の次元
-   * @param | vertex_count  | const GLsizei | 頂点の数
-   * @param | *vertex_array | const Vertex  | 頂点属性を格納した配列
-   */
+  // @brief constructor
+  // @param (const GLint   dim_size     ) 頂点の位置の次元
+  // @param (const GLsizei vertex_count ) 頂点の数
+  // @param (const Vertex  *vertex_array) 頂点属性を格納した配列
   Object(const GLint   dim_size,
          const GLsizei vertex_count,
          const Vertex  *vertex_array)
@@ -78,8 +97,9 @@ public:
     glEnableVertexAttribArray(/* GLuint index= */ 0);  // 有効にする attribute 変数の場所
   }
 
+  // @brief destructor
+  // @ref [C++の基礎 : コンストラクタ/デストラクタ](https://www.s-cradle.com/developer/sophiaframework/tutorial/Cpp/ctordtor.html)
   virtual ~Object()
-  // [C++の基礎 : コンストラクタ/デストラクタ](https://www.s-cradle.com/developer/sophiaframework/tutorial/Cpp/ctordtor.html)
   {
     // 頂点配列オブジェクトを削除する
     glDeleteBuffers(/* GLsizei      n       = */ 1, /* const GLuint *buffers= */ &vertex_array_object);
@@ -87,25 +107,6 @@ public:
     glDeleteBuffers(/* GLsizei      n       = */ 1, /* const GLuint *buffers= */ &vertex_buffer_objext);
   }
 
-private:
-
-  //========================================
-  // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p79
-  // > ただし,これだとインスタンスのコピーが複数作られたときに,そのうちのどれか一つを削除すると,
-  // > それらの間で共有されている頂点配列オブジェクトや頂点バッファオブジェクトが削除されてしまいます.
-  // > そうすると残りのインスタンスが使えなくなるほか,それらを削除しようとしたときに既に削除された
-  // > バッファオブジェクトを削除しようとして,OpenGL のエラーを引き起こしてしまいます.
-  // > そこでコピーコンストラクタと代入演算子を private メンバにして,インスタンスのコピーを禁止します
-  // > (コピーしようとするとコンパイルエラーになります).
-  // ref: [C++ のコピーコンストラクターと代入演算子 | プログラマーズ雑記帳](http://yohshiy.blog.fc2.com/blog-entry-303.html)
-
-  // コピーコンストラクタによるコピー禁止
-  Object(const Object &o);
-  // 代入によるコピー禁止
-  Object &operator=(const Object &o);
-  //========================================
-
-public:
   void bind() const
   // 頂点配列オブジェクトの結合
   // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p79
@@ -114,4 +115,5 @@ public:
     // 描画する頂点配列オブジェクトを指定する
     glBindVertexArray(/* GLuint array= */ vertex_array_object);
   }
+
 };
