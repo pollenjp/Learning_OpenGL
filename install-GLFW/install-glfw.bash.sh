@@ -1,6 +1,5 @@
 #!/bin/bash -eux
 #GLFW_VERSION=3.2.1
-#NOTCLEAN  # flag : buildディレクトリルが存在していればそれを使う
 GLFW_DIR="${HOME}/.glfw"
 CMAKE_INSTALL_PREFIX=${GLFW_DIR}/install/GLFW-${GLFW_VERSION}
 # current working directory
@@ -17,7 +16,8 @@ CWD=$(pwd)
 sudo apt update -y
 sudo apt install -y xorg-dev
 
-if [ ! -d "${GLFW_DIR}" ]; then
+if [ ! -d "${GLFW_DIR}" ] && [ ! -L "${GLFW_DIR}" ]; then
+  # if symbolic link file or directory does not exist
   mkdir ${GLFW_DIR}
 fi
 cd ${GLFW_DIR}
@@ -38,12 +38,11 @@ cd ..
 # [Shared CMake options](https://www.glfw.org/docs/latest/compile.html#compile_options_shared)
 cd "${GLFW_DIR}/glfw"
 directory1="${GLFW_DIR}/glfw/build"
-if [ -d "${directory1}" ] && [ -z ${NOTCLEAN+x} ]; then
-  # ${NOTCLEAN} is unset
+if [ -d "${directory1}" ]; then
   rm -rf ${directory1}
   mkdir ${directory1}
 fi
-if [ ! -d "${directory1}" ]; then
+if [ ! -d "${directory1}" ] && [ ! -L "${directory1}" ]; then
   mkdir ${directory1}
 fi
 cd ${directory1}

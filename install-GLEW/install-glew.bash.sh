@@ -1,6 +1,5 @@
 #!/bin/bash -eux
 #GLEW_VERSION=2.1.0
-#NOTCLEAN  # flag : buildディレクトリルが存在していればそれを使う
 GLEW_DIR="${HOME}/.glew"
 CMAKE_INSTALL_PREFIX=${GLEW_DIR}/install/GLEW-${GLEW_VERSION}
 # current working directory
@@ -21,7 +20,7 @@ CWD=$(pwd)
 sudo apt update -y
 sudo apt install -y build-essential libxmu-dev libxi-dev libgl-dev
 
-if [ ! -d "${GLEW_DIR}" ]; then
+if [ ! -d "${GLEW_DIR}" ] && [ ! -L "${GLEW_DIR}" ]; then
   mkdir ${GLEW_DIR}
 fi
 cd ${GLEW_DIR}
@@ -63,12 +62,11 @@ fi
 #directory1=${GLEW_DIR}/glew/build/cmake/build
 #directory1=${GLEW_DIR}/archive/glew-glew-${GLEW_VERSION}/build/cmake/build
 directory1=${GLEW_DIR}/download/glew-${GLEW_VERSION}/build/cmake/build
-if [ -d "${directory1}" ] && [ -z ${NOTCLEAN+x} ]; then
-  # ${NOTCLEAN} is unset
+if [ -d "${directory1}" ]; then
   rm -rf ${directory1}
   mkdir ${directory1}
 fi
-if [ ! -d "${directory1}" ]; then
+if [ ! -d "${directory1}" ] && [ ! -L "${directory1}" ]; then
   mkdir ${directory1}
 fi
 cd ${directory1}
