@@ -1,6 +1,6 @@
 # ch06 Mouse and Keyboard - sample2
 
-- 6.1.4 表示図形の縦横比の固定 (p.92)
+- 6.1.5 表示図形のサイズの固定 (p.97)
 
 - [Execute](#Execute)
 
