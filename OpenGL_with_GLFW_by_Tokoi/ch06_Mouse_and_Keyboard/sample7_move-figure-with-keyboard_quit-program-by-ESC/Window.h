@@ -10,13 +10,15 @@ class Window
 {
 private:
   // ウィンドウのハンドル
-  GLFWwindow *const window;
+  GLFWwindow * const window;
   // ウィンドウのサイズ
   GLfloat size[2];  // (width, height)
   // ワールド座標系に対するデバイス座標系の拡大率
   GLfloat scale;
   // 図形の正規化デバイス座標系上での位置
   GLfloat location[2];
+  // キーボードの状態
+  int keyStatus;
 
 public:
   // @brief constructor
@@ -27,13 +29,14 @@ public:
          int        height = 480,
          const char *title = "Hello!"):
          // create window
-         window(/* LFWwindow * */glfwCreateWindow(/* int         width   = */ width,
-                                                  /* int         height  = */ height,
-                                                  /* const char  *title  = */ title,
-                                                  /* GLFWmonitor *monitor= */ NULL,
-                                                  /* GLFWwindow  *share  = */ NULL)),
+         window(/* LFWwindow * */glfwCreateWindow(/* int           width  = */width,
+                                                  /* int           height = */height,
+                                                  /* const char  * title  = */title,
+                                                  /* GLFWmonitor * monitor= */NULL,
+                                                  /* GLFWwindow  * share  = */NULL)),
          scale(/* GLfloat */100.0f),
-         location{0.0f, 0.0f}
+         location{0.0f, 0.0f},
+         keyStatus(GLFW_RELEASE)
   {
     if (this->window == NULL){  // if you fail in creating a window (ウィンドウ作成に失敗した処理)
       std::cerr << "Can't create GLFW window." << std::endl;
@@ -63,6 +66,9 @@ public:
     // > wheel(GLFWwindow *const window, double x, double y)
     glfwSetScrollCallback(/* GLFWwindow * window= */this->window, /* GLFWscrollfun cbfun= */wheel);
 
+    // キーボード操作時に呼び出す処理の登録
+    glfwSetKeyCallback(/* GLFWwindow * const window= */this->window, /* GLFWkeyfun cbfun= */this->keyboard);
+
     // @brief このインスタンスの this ポインタを記録しておく
     // @detail
     //   > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p92
@@ -83,8 +89,10 @@ public:
     //     メンバ関数をコールバック関数に使う場合は、静的メンバ関数である必要があります
     //   > [glfwSetWindowSizeCallback() - GLFW: Window reference](https://www.glfw.org/docs/latest/group__window.html#gaa40cd24840daa8c62f36cafc847c72b6)
     glfwSetWindowSizeCallback(/* GLFWwindow *const window= */this->window, /* GLFWwindowsizefun cbfun= */this->resize);
+
     // 開いたウィンドウの初期設定
-    resize(this->window, width, height);
+    // this also initialize ths->size
+    resize(/* GLFWwindow * const window= */this->window, /* int width= */width, /* int height*/height);
   }
 
   // @brief destructor
@@ -104,6 +112,41 @@ public:
   // @brief accessor ウィンドウのサイズを取り出す
   const GLfloat * getSize() const { return this->size; }
 
+  //  @brief static method キーボード操作時の処理 (callback function of glfwSetKeyCallback)
+  //  @param (GLFWwindow *const window) キーボード操作の対象となったウィンドウのハンドル
+  //  @param (int key) 操作されたキー. これは glfwGetKey() の引数 key に指定するものと同じ.
+  //  @param (int scancode) 操作されたキーのスキャンコード. この値はプラットフォームに依存している.
+  //  @param (int action)
+  //    GLFW_RELEASE (0) : 離したとき
+  //    GLFW_PRESS   (1) : キーを押したとき
+  //    GLFW_REPEAT  (2) : キーリピート機能が働いたとき
+  //  @param (int mods) key と同時に押した Shift などのモディファイア (修飾) キー. 以下のキーが同時に押されたとき.
+  //    Shift : GLFW_MOD_SHIFT (0x0001),
+  //    Ctrl  : GLFW_MOD_CONTROL (0x0002),
+  //    ALT   : GLFW_MOD_ALT (0x0004),
+  //    Windows,Command,Superキー : GLFW_MOD_SUPER (0x0008) キー,
+  //    複数のモディファイアキーを同時に押しているときは,これらのビット論理和が格納
+  //  @detail
+  //    > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p112
+  static void keyboard(GLFWwindow * const window,
+                       int                key,
+                       int                scancode,
+                       int                action,
+                       int                mods)
+  {
+    // このインスタンスの this ポインタを得る
+    Window * const instance(
+      static_cast<Window *>(/* void * */glfwGetWindowUserPointer(/* GLFWwindow * window= */window)));
+    if (instance != NULL)
+    {
+      std::cout << "Get instance pointer!" << std::endl;
+      // キーの状態を保存する
+      instance->keyStatus = action;
+    } else {  // if instace is null
+      std::cerr << "`instance` variable in Window.keyboard() is NULL (null pointer)." << std::endl;
+    }
+}
+
   // @brief method ウィンドウのサイズ変更時の処理
   // @param (GLFWwindow *const window) ウィンドウ
   // @param (int width)                ウィンドウの横幅
@@ -118,7 +161,9 @@ public:
   //     @param (int height)               それぞれサイズ変更後のウィンドウのheight
   //   > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p90
   //     メンバ関数をコールバック関数に使う場合は、静的メンバ関数である必要があります
-  static void resize(GLFWwindow *const window, int width, int height)
+  static void resize(GLFWwindow * const window,
+                      int               width,
+                      int               height)
   {
     // ウィンドウ全体をビューポートに設定する
     // [glViewport](https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glViewport.xml)
@@ -148,17 +193,44 @@ public:
   int shouldClose() const
   {
     return glfwWindowShouldClose(/* GLFWwindow *window= */this->window)
-           || glfwGetKey(/* GLFWwindow * window= */window, /* int key   = */GLFW_KEY_ESCAPE);
+           || glfwGetKey(/* GLFWwindow * window= */this->window, /* int key = */GLFW_KEY_ESCAPE) == GLFW_PRESS;
   }
 
   // @brief method カラーバッファを入れ替えてイベントを取り出す.
-  // @detail ダブルバッファリング
+  // @detail イベント待ちのあとにイベント処理を書いている
   void swapBuffers()
   {
     // カラーバッファ入れ替え <= ダブルバッファリング
     glfwSwapBuffers(/* GLFWwindow *window= */this->window);
-    // イベントを取り出す (ポーリング方式)
-    glfwWaitEvents();
+
+    // イベントを取り出す
+    // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p42
+    //   ポーリング方式
+    // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p110
+    //   そこでイベントの取り出しを,キーを押している間は glfwPollEvents() で行い,キーを押していないときは
+    //   glfwWaitEvents() で行うようにします. glfwSetKeyCallback() 関数を用いれば,任意のキーを操作したときに
+    //   実行するコールバック関数を指定できるので,その中でこの切り替えを行います
+    if(this->keyStatus == GLFW_RELEASE){
+      // keyが押されていない場合
+      // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p109
+      //   glfwWaitEvents() はイベントが発生したときにプログラムの実行を再開しますが,キーを押し続けている状態では
+      //   キーリピート機能が働くまでイベントは発生しませんから,それまでプログラムが停止したまま
+      glfwWaitEvents();
+    } else {
+      // GLFW_PRESS, GLFW_REPEAT(キーリピート) のとき
+      // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p39
+      //   時間とともに画面の表示を更新するアニメーションなどの場合はイベントの発生を待たないglfwPollEvents()関数
+      glfwPollEvents();
+    }
+
+    // キーボードの状態を調べる
+    // x move
+    if (glfwGetKey(/* GLFWwindow * window= */this->window, /* int key   = */GLFW_KEY_LEFT) == GLFW_PRESS)
+                                                      { this->location[0] -= 2.0f / this->size[0]; }
+    else if (glfwGetKey(this->window, GLFW_KEY_RIGHT) == GLFW_PRESS){ this->location[0] += 2.0f / this->size[0]; }
+    // y move
+    if      (glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS){ this->location[1] -= 2.0f / this->size[1]; }
+    else if (glfwGetKey(this->window, GLFW_KEY_UP)   == GLFW_PRESS){ this->location[1] += 2.0f / this->size[1]; }
 
     // マウスの左ボタンの状態を調べる
     // > [glfwGetMouseButton() - GLFW: Input reference](https://www.glfw.org/docs/latest/group__input.html#gac1473feacb5996c01a7a5a33b5066704)
@@ -167,14 +239,15 @@ public:
     //   GLFW_MOUSE_BUTTON_1 と GLFW_MOUSE_BUTTON_LEFT は左ボタン
     //   GLFW_MOUSE_BUTTON_2 と GLFW_MOUSE_BUTTON_RIGHT は右ボタン
     //   GLFW_MOUSE_BUTTON_3 と GLFW_MOUSE_BUTTON_MIDDLE は中ボタン
-    if (glfwGetMouseButton(/* GLFWwindow * window= */this->window, /* int button= */GLFW_MOUSE_BUTTON_1)) // GLFW_PRESS(1) or GLFW_RELEASE(0)
-    {
+    // glfwGetMouseButton
+    if (glfwGetMouseButton(/* GLFWwindow * window= */this->window,
+                           /* int          button= */GLFW_MOUSE_BUTTON_1) != GLFW_RELEASE){
       // マウスの左ボタンが押されていたらマウスカーソルの位置を取得する
       double x, y;
       // > [glfwGetCursorPos() - GLFW: Input reference](https://www.glfw.org/docs/latest/group__input.html#ga01d37b6c40133676b9cea60ca1d7c0cc)
-      glfwGetCursorPos(/* GLFWwindow * window= */ this->window,
-                       /* double     * xpos  = */ &x,
-                       /* double     * ypos  = */ &y);
+      glfwGetCursorPos(/* GLFWwindow * window= */this->window,
+                       /* double     * xpos  = */&x,
+                       /* double     * ypos  = */&y);
       // マウスカーソルの正規化デバイス座標系上での位置を求める
       // > ○○くんのために一所懸命書いたものの結局○○くんの卒業に間に合わなかったGLFW による OpenGL 入門 - p102
       //   マウスカーソルの座標系の原点はウィンドウの左上
