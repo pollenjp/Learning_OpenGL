@@ -29,11 +29,18 @@ run :  # 要件チェック
 	${MAKE} ${TARGET}
 	./${TARGET}
 
+#===============================================================================
 .PHONY : preprocess
-preprocess :  # 要件チェック
+preprocess :
+# [Bash - adding color - NoskeWiki printf zsh](http://www.andrewnoske.com/wiki/Bash_-_adding_color)
 ifndef GLFW_VERSION
-	$(error "=== The GLFW_VERSION variable should be set ===")
+	@printf "\e[101m Variable GLFW_VERSION does not set. \e[0m \n"
+	@${MAKE} error ERROR_MESSAGE="GLFW_VERSION"
 endif
+
+.PHONY : error
+error :  ## errors処理を外部に記述することで好きなエラーメッセージをprintfで記述可能.
+	$(error "${ERROR_MESSAGE}"
 
 .PHONY : clean
 clean :
