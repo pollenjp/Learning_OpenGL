@@ -1,13 +1,5 @@
-#CXX := g++
-#CXXFLAGS = -g -Wall -std=c++11
-#GLEW_VERSION := 2.1.0
-#
-#INC := ${HOME}/.glew/install/GLEW-${GLEW_VERSION}/include
-#INC := $(addprefix -I,${INC})
-#LDLIBS1 := ${HOME}/.glew/install/GLEW-${GLEW_VERSION}/lib
-#LDLIBS2 := GLEW GL
-#LDLIBS := $(addprefix -L,${LDLIBS1}) $(addprefix -l,${LDLIBS2})
-#LINK.cc  = $(CXX) $(CXXFLAGS) $(CPPFLAGS) ${LDFLAGS} $(TARGET_ARCH)
+SHELL := /bin/bash
+
 GLFW_VERSION := 3.2.1
 GLEW_VERSION := 2.1.0
 ERROR_MESSAGE :=
