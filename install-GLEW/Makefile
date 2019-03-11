@@ -8,12 +8,12 @@
 #LDLIBS2 := GLEW GL
 #LDLIBS := $(addprefix -L,${LDLIBS1}) $(addprefix -l,${LDLIBS2})
 #LINK.cc  = $(CXX) $(CXXFLAGS) $(CPPFLAGS) ${LDFLAGS} $(TARGET_ARCH)
+GLFW_VERSION := 3.2.1
+GLEW_VERSION := 2.1.0
+ERROR_MESSAGE :=
 
 CXX := g++
 CXXFLAGS = -g -Wall -std=c++11
-GLFW_VERSION := 3.2.1
-GLEW_VERSION := 2.1.0
-
 INC := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/include \
        ${HOME}/.glew/install/GLEW-${GLEW_VERSION}/include
 INC := $(addprefix -I,${INC})
@@ -30,6 +30,7 @@ export
 
 .DEFAULT_GOAL := run
 
+#===============================================================================
 ${TARGET} : ${OBJECTS}
 
 %.o : %.cpp
@@ -44,11 +45,23 @@ run :  # 要件チェック
 	${MAKE} ${TARGET}
 	./${TARGET}
 
+
+#===============================================================================
 .PHONY : preprocess
-preprocess :  # 要件チェック
-ifndef GLEW_VERSION
-	$(error "=== The GLEW_VERSION variable should be set ===")
+preprocess :
+# [Bash - adding color - NoskeWiki printf zsh](http://www.andrewnoske.com/wiki/Bash_-_adding_color)
+ifndef GLFW_VERSION
+	@printf "\e[101m Variable GLFW_VERSION does not set. \e[0m \n"
+	@${MAKE} error ERROR_MESSAGE="GLFW_VERSION"
 endif
+ifndef GLEW_VERSION
+	@printf "\e[101m Variable GLEW_VERSION does not set. \e[0m \n"
+	@${MAKE} error ERROR_MESSAGE="GLEW_VERSION"
+endif
+
+.PHONY : error
+error :  ## errors処理を外部に記述することで好きなエラーメッセージをprintfで記述可能.
+	$(error "${ERROR_MESSAGE}")
 
 .PHONY : clean
 clean :
